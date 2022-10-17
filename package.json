@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "connect": "^3.7.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "mongodb": "^4.10.0"
+  }
+}
