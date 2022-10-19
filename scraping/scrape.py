@@ -6,43 +6,68 @@
 
 import requests
 import json
+import re
 from bs4 import BeautifulSoup
 
 ROOT_URL = "https://dartmouth.smartcatalogiq.com/"
 
-def get_course_name(soup: BeautifulSoup, selector1: str, selector2: str) -> (str, float, str):
+def get_course_name(soup: BeautifulSoup, selector1: str, selector2: str) -> (dict, str):
     """
     retrieves and returns the course name on the ORC page, which consists of a department, number, and title. 
-    Department is returned as a string, number is returned as a float, and title is returned as a string
+    Each value is returned as a string
+    with department and number nested together within a dictionary.
     """
     course_number = soup.select(selector1)[0].contents[0].split()
     course_dept = course_number[0]
-    course_number = float(course_number[1])
-    course_title = soup.select(selector2)[0].contents[2].strip()
-    course_name = {
-        'course_number': course_number,
+    course_number = course_number[1]
+    course_title = soup.select(selector2)[0].contents[2].strip().replace("\u2019", "'")
+    course_code = {
         'course_dept': course_dept,
-        'course_title': course_title,
+        'course_number': course_number,
     }
-    return course_name
+    return course_code, course_title
+
+def get_course_description(soup: BeautifulSoup, selector: str) -> str:
+    """retrieves and returns the description on the ORC course page as a string"""
+    paragraphs = soup.select(selector)
+    if len(paragraphs) == 0:
+        return ""
+    for index in range(len(paragraphs)):
+        paragraphs[index] = paragraphs[index].get_text().strip()
+    return ' '.join(paragraphs).replace('\u00a0', '').replace('\u201c', '').replace('\u201d', '').replace('\\\\\\\\f\r\n\u00a0', '').replace("\u2019", "'").replace(' \\\\\\\\f\r\n',"")
 
 def get_instructors(soup: BeautifulSoup, selector: str) -> list[str]:
     """retrieves and returns the instructors on the ORC course page as a list of strings"""
     instructors = soup.select(selector)
     if len(instructors) == 0:
         return []
-    return  instructors[0].contents[1]
+    return instructors[0].get_text()[len("Instructor"):]
+
+def get_xlists(soup: BeautifulSoup, selector: str) -> list[str]:
+    """retrieves and returns crosslisted courses on the ORC course page as a list of strings"""
+    xlists = soup.select(selector)
+    if len(xlists) == 0:
+        return []
+    print ("COURSES ARE ", xlists[0].get_text())
+    courses = list(re.finditer(r"[A-Z]{3,4} [0-9]{1,2,3}\.?[0-9]{1,2}?", xlists[0].get_text()))
+    xlist_courses = []
+    for course in courses:
+        xlist_courses.append(course.group())
+    return xlist_courses
+
 
 def get_prereqs(soup: BeautifulSoup, selector: str) -> list[str]:
     """retrieves and returns the prereqs on the ORC course page as a list of strings"""
     prereqs = soup.select(selector)
     if len(prereqs) == 0:
         return []
-    prereqs = prereqs[0]
-    return prereqs
+    return prereqs[0].get_text().strip()
 
 def get_distribs_wc(soup: BeautifulSoup, selector: str) -> (list[str], str):
-    """retrieves and returns the distribs and world cultures on the ORC course page as a list of strings (possible distribs) and a string (WC if applicable)"""
+    """
+    retrieves and returns the distribs and world cultures on the ORC course page 
+    as a list of strings (possible distribs) and a string (WC if applicable)
+    """
     distribs = soup.select(selector)
     wc = None
     # some classes have no distribs or WCs
@@ -55,8 +80,12 @@ def get_distribs_wc(soup: BeautifulSoup, selector: str) -> (list[str], str):
         wc = distribs[1][distribs[1].index(":")+1:]
     
     # handle classes with multiple possible distribs (e.g., INT or LIT)
-    distribs = distribs[0][distribs[0].index(":")+1:]
-    distribs = distribs.split(" or ")
+    try:
+        distribs = distribs[0][distribs[0].index(":")+1:]
+        distribs = distribs.split(" or ")
+    except:
+        distribs = [distribs[0]]
+    
     return distribs, wc
 
 def get_offered_terms(soup: BeautifulSoup, selector: str) -> list[str]:
@@ -73,16 +102,19 @@ def scrape_course_page(root_url: str, link: str):
     page = requests.get(f"{root_url}{link}")
     soup = BeautifulSoup(page.content, "html.parser")
     # on course page
-    course_name = get_course_name(soup, "h1 span", "h1")
-    paragraphs = soup.select("#main .desc p")
-
+    course_code, course_title = get_course_name(soup, "h1 span", "h1")
+    course_description = get_course_description(soup, "#main .desc p")
     instructors = get_instructors(soup, "#instructor")
-    prereqs = get_prereqs(soup, '.sc_prereqs')
+    xlists = get_xlists(soup, "#main > :not(div):not(h1):not(h3)")
+    prereqs = get_prereqs(soup, ".sc_prereqs")
     distribs, wc = get_distribs_wc(soup, ".sc-extrafield p")
     offered_terms = get_offered_terms(soup, '#main .offered li')
 
     course = {
-        'course_name': course_name,
+        'course_code': course_code,
+        'course_title': course_title,
+        'description': course_description,
+        'xlists': xlists,
         'instructors': instructors,
         'distribs': distribs,
         'wc': wc,
@@ -104,7 +136,7 @@ def scrape_course_pages(root_url: str, soup: BeautifulSoup):
         for course in courses:
             link = course['href']
             course_json = scrape_course_page(root_url, link)
-            print(course_json)
+            print(course_json, "\n\n")
 
 
 def scrape_dept_pages(root_url: str, seed: str, func = None):
