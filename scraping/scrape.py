@@ -29,15 +29,41 @@ def scrape_course_pages(root_url, soup):
             course_number = course_number[1]
             course_title = soup.select("h1")[0].contents[2].strip()
             paragraphs = soup.select("#main .desc p")
+            offered_terms = soup.select('#main .offered li')
+            for index in range(len(offered_terms)):
+                offered_terms[index] = offered_terms[index].contents[0]
+
+            instructors = soup.select("#instructor")
+            if len(instructors) > 0:
+                instructors = instructors[0].contents[1]
+            
+            distribs = soup.select(".sc-extrafield p")
+            wc = None
+            if len(distribs) > 0:
+                distribs = distribs[0].contents[0].split("; ")
+                if len(distribs) == 2:
+                    wc = distribs[1][distribs[1].index(":")+1:]
+                distribs = distribs[0][distribs[0].index(":")+1:]
+                distribs = distribs.split(" or ")
+                print(distribs, wc)
+            
+            prereqs = soup.select('.sc_prereqs')
+            if len(prereqs) > 0:
+                prereqs = prereqs[0]
+                # print(prereqs)
 
             course_name = {
                 'course_number': course_number,
                 'course_dept': course_dept,
-                'course_title': course_title
+                'course_title': course_title,
             }
 
             course = {
-                'course_name': course_name
+                'course_name': course_name,
+                'instructors': instructors,
+                'distribs': distribs,
+                'wc': wc,
+                'offered': offered_terms,
             }
 
             course_json = json.dumps(course)
