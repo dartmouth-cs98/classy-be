@@ -20,7 +20,7 @@ def get_course_name(soup: BeautifulSoup, selector1: str, selector2: str) -> (dic
     course_number = soup.select(selector1)[0].contents[0].split()
     course_dept = course_number[0]
     course_number = course_number[1]
-    course_title = soup.select(selector2)[0].contents[2].strip().replace("\u2019", "'")
+    course_title = soup.select(selector2)[0].contents[2].strip()
     course_code = {
         'course_dept': course_dept,
         'course_number': course_number,
@@ -34,22 +34,42 @@ def get_course_description(soup: BeautifulSoup, selector: str) -> str:
         return ""
     for index in range(len(paragraphs)):
         paragraphs[index] = paragraphs[index].get_text().strip()
-    return ' '.join(paragraphs).replace('\u00a0', '').replace('\u201c', '').replace('\u201d', '').replace('\\\\\\\\f\r\n\u00a0', '').replace("\u2019", "'").replace(' \\\\\\\\f\r\n',"")
+    return ' '.join(paragraphs)
 
 def get_instructors(soup: BeautifulSoup, selector: str) -> list[str]:
     """retrieves and returns the instructors on the ORC course page as a list of strings"""
     instructors = soup.select(selector)
     if len(instructors) == 0:
         return []
-    return instructors[0].get_text()[len("Instructor"):]
+    instructor_string = instructors[0].get_text()[len("Instructor"):]
+    
+    delimiters = ["or", "and", ",", "/"]
+    for delimiter in delimiters:
+        instructors = instructor_string.split(delimiter)
+        if len(instructors) > 1:
+            break
+    
+    for index in range(len(instructors)):
+        instructors[index] = instructors[index].strip()
+    return instructors
 
 def get_xlists(soup: BeautifulSoup, selector: str) -> list[str]:
     """retrieves and returns crosslisted courses on the ORC course page as a list of strings"""
-    xlists = soup.select(selector)
-    if len(xlists) == 0:
+    xlists = soup.select(selector)[0].get_text()
+    target = "Cross Listed Courses"
+    if target not in xlists:
         return []
-    print ("COURSES ARE ", xlists[0].get_text())
-    courses = list(re.finditer(r"[A-Z]{3,4} [0-9]{1,2,3}\.?[0-9]{1,2}?", xlists[0].get_text()))
+    target_index = xlists.index(target) + len(target)
+    xlists = xlists[target_index:]
+    try:
+        end_index = xlists.index('Prerequisites')
+    except:
+        try:
+            end_index = xlists.index('Degree Requirement Attributes')
+        except:
+            end_index = xlists.index('The Timetable of Class Meetings')
+    xlists = xlists[:end_index].strip()
+    courses = list(re.finditer(r"[A-Z]{3,4} [0-9]{1,3}\.?[0-9]{0,2}", xlists))
     xlist_courses = []
     for course in courses:
         xlist_courses.append(course.group())
@@ -105,7 +125,7 @@ def scrape_course_page(root_url: str, link: str):
     course_code, course_title = get_course_name(soup, "h1 span", "h1")
     course_description = get_course_description(soup, "#main .desc p")
     instructors = get_instructors(soup, "#instructor")
-    xlists = get_xlists(soup, "#main > :not(div):not(h1):not(h3)")
+    xlists = get_xlists(soup, "#main")
     prereqs = get_prereqs(soup, ".sc_prereqs")
     distribs, wc = get_distribs_wc(soup, ".sc-extrafield p")
     offered_terms = get_offered_terms(soup, '#main .offered li')
