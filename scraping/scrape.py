@@ -78,12 +78,14 @@ def get_xlists(soup: BeautifulSoup, selector: str) -> list[str]:
 
 def get_prereqs(soup: BeautifulSoup, selector: str) -> list[str]:
     """retrieves and returns the prereqs on the ORC course page as a list of strings"""
-    prereqs = soup.select(selector)
-    if len(prereqs) == 0:
+    prereqs = soup.select(selector)[0].get_text()
+    try:
+        prereqs = prereqs[prereqs.index("Prerequisite")+len("Prerequisite"):].strip()
+        return prereqs
+    except:
         return []
-    return prereqs[0].get_text().strip()
 
-def get_distribs_wc(soup: BeautifulSoup, selector: str) -> (list[str], str):
+def get_distribs_wc(soup: BeautifulSoup, selector: str):
     """
     retrieves and returns the distribs and world cultures on the ORC course page 
     as a list of strings (possible distribs) and a string (WC if applicable)
@@ -135,6 +137,7 @@ def scrape_course_page(root_url: str, link: str):
         'course_title': course_title,
         'description': course_description,
         'xlists': xlists,
+        'prereqs': prereqs,
         'instructors': instructors,
         'distribs': distribs,
         'wc': wc,
