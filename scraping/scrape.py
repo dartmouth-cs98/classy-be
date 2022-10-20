@@ -159,7 +159,8 @@ def scrape_course_pages(root_url: str, soup: BeautifulSoup):
         for course in courses:
             link = course['href']
             course_json = scrape_course_page(root_url, link)
-            print(course_json, "\n\n")
+            if '"prereqs": []' not in course_json:
+                print(course_json, "\n\n")
 
 
 def scrape_dept_pages(root_url: str, seed: str, func = None):
