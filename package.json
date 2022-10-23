@@ -1,20 +1,47 @@
 {
-  "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "body-parser": "^1.20.1",
-    "connect": "^3.7.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.0.3",
-    "express": "^4.18.2",
-    "mongo": "^0.1.0",
-    "mongodb": "^4.10.0",
-    "mongoose": "^6.6.5",
-    "validation": "^0.0.1"
-  },
   "name": "classy-be",
   "version": "1.0.0",
   "main": "index.js",
   "repository": "https://github.com/dartmouth-cs98/classy-be.git",
   "author": "Vi-N-Tran <Vi.n.tran.23@dartmouth.edu>",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "dev": "ts-node-dev index.ts",
+    "build": "tsc",
+    "start": "node dist"
+  },
+  "devDependencies": {
+    "cache-loader": "^4.1.0",
+    "clean-webpack-plugin": "^4.0.0",
+    "fork-ts-checker-webpack-plugin": "^7.2.13",
+    "pnp-webpack-plugin": "^1.7.0",
+    "source-map-loader": "^4.0.1",
+    "thread-loader": "^3.0.4",
+    "ts-loader": "^9.4.1",
+    "ts-node": "^10.9.1",
+    "webpack-cli": "^4.10.0"
+  },
+  "dependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.14",
+    "@types/mongoose": "^5.11.97",
+    "@types/node": "^18.11.3",
+    "async": "^3.2.4",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.1",
+    "connect": "^3.7.0",
+    "cors": "^2.8.5",
+    "dist": "^0.1.2",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "mongo": "^0.1.0",
+    "mongodb": "^4.10.0",
+    "mongoose": "^6.6.5",
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.20",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^4.8.4",
+    "validation": "^0.0.1",
+    "webpack": "^5.74.0"
+  }
 }
