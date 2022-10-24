@@ -1,5 +1,7 @@
 """
     scrapeMajor.py - code that scrapes the major/minor requirements for Classy, a CS 98 project
+    NOTE: We've decided to forgo scraping for major/minor requirements. Instead, we'll have a
+    platform-managed database of major/minor requirements that users can request to update.
     Author: Alex Feng
     Term: Fall 2022
 """
