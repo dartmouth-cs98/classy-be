@@ -818,7 +818,6 @@ router.route('/waitlist/:dept/:num')
 router.route('/waitlist/join')
     .post(async (req, res) => {
         try {
-            console.log('adding student');
             const result = await WaitlistController.joinWaitlists(
                 req.body.courseDept, req.body.courseNum,
                 req.body.studentId, req.body.term, req.body.reason);
@@ -832,7 +831,6 @@ router.route('/waitlist/join')
 router.route('/waitlist/addone')
     .put(async (req, res) => {
         try {
-            console.log('adding student');
             const result = await WaitlistController.addToOneWaitlist(
                 req.body.courseDept, req.body.courseNum, req.body.studentId, req.body.term);
             res.json(result);
@@ -845,7 +843,6 @@ router.route('/waitlist/addone')
 router.route('/waitlist/remove')
     .put(async (req, res) => {
         try {
-            console.log('removing student');
             const result = await WaitlistController.removeFromWaitlist(
                 req.body.courseDept, req.body.courseNum, req.body.studentId, req.body.term);
             res.json(result);
@@ -858,7 +855,6 @@ router.route('/waitlist/remove')
 router.route('/waitlist/withdraw')
     .put(async (req, res) => {
         try {
-            console.log('withdrawing student');
             const result = await WaitlistController.withdrawFromWaitlist(
                 req.body.courseDept, req.body.courseNum, req.body.studentId);
             res.json(result);

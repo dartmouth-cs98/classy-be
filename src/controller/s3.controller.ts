@@ -16,7 +16,6 @@ export class UploadController {
     // Initialize bucket
     await initBucket(s3);
 
-    console.log(req.body)
     // get file data through req.file thank to multer 
     console.log("file stobject", req.file)
 

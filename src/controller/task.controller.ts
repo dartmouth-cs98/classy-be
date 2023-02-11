@@ -1,18 +1,13 @@
 import { TaskModel } from '../model/task.model';
 
 export const getTasks = async () => {
-    console.log("In getTasks");
     const tasks = await TaskModel.find({});
-    console.log('tasks:::', tasks);
     return tasks;
 }
 
 export const createTask = async (task: object) => {
     let data = {};
     try {
-        console.log("In createTask");
-        console.log('task in create task is: ', task);
-        console.log(TaskModel);
         data = await TaskModel.create(task);
     } catch (err) {
         console.log('Error::' + err);
