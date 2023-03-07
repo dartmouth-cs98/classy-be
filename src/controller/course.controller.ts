@@ -66,8 +66,8 @@ export const getCourse = async (dept: string, num: string) => {
         strictPopulate: false
     });
     
-    const studentId = '63c4424ce18e75a330906128';
-    const student = await StudentModel.findOne({'_id': studentId}).populate('waitlistReasons')
+    const studentId = '6404596053077a6f35eb6ffa';
+    const student = await StudentModel.findOne({'_id': studentId}).populate('waitlistReasons').populate('friends')
     const onWaitlist = await CourseModel.findOne({
         'courseDept': dept, 
         'courseNum': num, 
