@@ -14,7 +14,7 @@ export const getWaitlists = async () => {
 }
 
 export const getWaitlist = async (dept: String, num: String) => {
-    const studentId = '63c4424ce18e75a330906128';
+    const studentId = '6404596053077a6f35eb6ffa';
     const student = await StudentModel.findOne({'_id': studentId}).populate('user')
     const course = await CourseModel.findOne({'courseDept': dept, 'courseNum': num});
 

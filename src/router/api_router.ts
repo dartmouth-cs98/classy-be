@@ -834,6 +834,7 @@ router.route('/waitlist/:dept/:num')
 router.route('/waitlist/join')
     .post(async (req, res) => {
         try {
+            console.log('in be');
             const result = await WaitlistController.joinWaitlists(
                 req.body.courseDept, req.body.courseNum,
                 req.body.studentId, req.body.offerings, req.body.reason);

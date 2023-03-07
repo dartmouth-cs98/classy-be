@@ -20,11 +20,8 @@ export const getUser = async (id: string) => {
             { path: 'coursesTaken'},
             { path: 'currentCourses'},
             { path: 'shoppingCart'},
+            { path: 'friends', populate: { path: 'user' }},
             ]
-        })
-        .populate({
-            path: 'student',
-            populate: { path: 'friends' }
         })
         .populate('professor')
         console.log('the user is', user)
