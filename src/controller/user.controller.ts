@@ -93,7 +93,7 @@ export const login = async (user: any) => {
 }
 
 
-export const register = async (userObject: {user: {username: String, email: String, netID: String}, student: Object}) => {
+export const register = async (userObject: {user: {username: String, email: String, netID: String, profileImageUrl:String}, student: Object}) => {
     try {
         // validate that username, netID, and email are unique
         const foundUsername = await UserModel.findOne({username: userObject.user.username});
