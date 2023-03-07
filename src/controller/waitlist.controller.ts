@@ -2,7 +2,7 @@ import { CourseModel } from '../model/course.model';
 import { StudentModel } from '../model/student.model';
 
 export const getWaitlists = async () => {
-    const studentId = '63c4424ce18e75a330906128';
+    const studentId = '6404596053077a6f35eb6ffa';
     const student = await StudentModel.findOne({'_id': studentId}).populate('user')
     const courses = await CourseModel.find({
         '$or': [{'offerings.waitlist': studentId},
