@@ -114,4 +114,4 @@ See all available routes [here](https://docs.google.com/document/d/1a8CfnUn0UmRr
 * Alyssa Anderson
 
 ### Contributions
-Our current repo includes many generated files. These include node/yarn-generated files (node_modules, yarn.lock, package-lock.json) and scraper-generated files (tsv, csv, txt). For a more accurate representation of contributions, see our [filtered repo](https://github.com/alxfngg/filtered-classybe/graphs/contributors?from=2022-10-16&to=2023-03-11&type=a) which is a duplicate of this repo, but generated files have been removed from the filtered repo's history.
+Our current repo includes many generated files. These include node/yarn-generated files (node_modules, yarn.lock, package-lock.json) and scraper-generated files (tsv, csv, txt). As a result, the contributions tab of this repo are skewed (e.g., adding a package constitutes thousands of line additions). For a more accurate representation of contributions, see our [filtered repo](https://github.com/alxfngg/filtered-classybe/graphs/contributors?from=2022-10-16&to=2023-03-11&type=a) which is a duplicate of this repo, but generated files have been removed from the filtered repo's history.
