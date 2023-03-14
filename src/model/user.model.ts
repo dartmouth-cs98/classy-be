@@ -9,7 +9,7 @@ export interface IUser extends Document {
   netID: string;
   password: string;
   admin: boolean;
-  professorId: Types.ObjectId[];
+  professor: Types.ObjectId;
   student: Types.ObjectId[];
   profileImageUrl: string;
 
@@ -23,7 +23,7 @@ const UserSchema: Schema = new Schema({
   lastName: { type: String, required: true },
   username: { type: String, required: true },
   email: { type: String, required: true },
-  netID: { type: String, required: true },
+  netID: { type: String },
   password: { type: String, required: true },
   admin: { type: Boolean },
   professor: { type: Schema.Types.ObjectId, ref: 'Professor' },
