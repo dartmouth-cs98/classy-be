@@ -126,23 +126,30 @@ export const register = async (userObject: {user: {username: String, email: Stri
                 return udpatedUser;                
             }
             if (userObject.professor){
-                await UserModel.find({firstName:userObject.user.firstName, lastName: userObject.user.lastName}).remove();
+                // remove default professor (one created by us)
+                const defaultProf = await UserModel.find({firstName:userObject.user.firstName, lastName: userObject.user.lastName}).remove();
+                // logic to check if there's a registered account already. This is not working atm
+                // if (defaultProf.username && defaultProf.password) {
+                //     return {errors: ['Professor already exists']};
+                // }
+
+                // create a new user for the professor (since we deleted the default professor professor)
                 const newUser =  await UserModel.create(userObject.user);
+
+                // find the professor object in the database
                 const name = userObject.user.firstName + ' ' + userObject.user.lastName;
                 const foundProf = ProfessorModel.find({name: name});
                 if (foundProf) {
                     // if there's a professor with the same name, update the professor's user field
-                    await ProfessorModel.updateOne(foundProf, {$set: {user: newUser?._id}});
+                    const updatedProf = await ProfessorModel.updateOne(foundProf, {$set: {user: newUser?._id}});
+                    console.log('updatedProf in foundProf', updatedProf )
                 } else {
                     // if there's no professor with the same name, create a new professor
-                    await ProfessorModel.create(userObject.professor);
+                    userObject.professor = {...userObject.professor, name, user:newUser?._id}
+                    const updatedProf = await ProfessorModel.create(userObject.professor);
+                    console.log('updatedProf in else', updatedProf )
                 }
-
-                await StudentModel.create(userObject.student);
-                const udpatedUser = await UserModel.findByIdAndUpdate(foundProf._id, {$set: {professor: foundProf?._id}});
-                await ProfessorModel.updateOne(userObject.professor, {$set: {user: user?._id}});
-                console.log('udpatedUser professor', udpatedUser)
-                return udpatedUser;                
+                return newUser;                
             }
         }
     } catch (err) {
