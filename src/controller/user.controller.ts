@@ -43,9 +43,16 @@ export const createUser = async (user: object) => {
     return data;
 }
 
-export const updateUser = async (id: string, user: object) => {
+export const updateUser = async (id: string, body: {user: object, student: {_id: string}}) => {
+    console.log('bodystudent' + JSON.stringify(body.student))
     try {
-        const updatedUser = await UserModel.findByIdAndUpdate({ _id: id }, user, { new: true }) as object;
+        let updatedUser = await UserModel.findByIdAndUpdate(id, body.user, { new: true }) as object;
+        if (body.student) {
+            console.log('updating')
+            updatedUser = await StudentModel.findByIdAndUpdate(body.student._id, body.student, { new: true }) as object
+        }
+        console.log('user:' + body.user);
+        console.log('updatedUser:' + updatedUser);
         return updatedUser;
     } catch (err) {
         console.log('Error::' + err);
